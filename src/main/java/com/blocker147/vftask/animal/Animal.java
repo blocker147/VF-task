@@ -1,10 +1,14 @@
 package com.blocker147.vftask.animal;
 
+import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "animals")
 public class Animal {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Null(message = "Do not provide id.")
     private Long id;
 
