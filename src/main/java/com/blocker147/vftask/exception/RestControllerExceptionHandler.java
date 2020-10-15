@@ -1,6 +1,6 @@
 package com.blocker147.vftask.exception;
 
-import com.blocker147.vftask.student.AnimalNotFoundException;
+import com.blocker147.vftask.animal.AnimalNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

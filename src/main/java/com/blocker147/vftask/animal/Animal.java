@@ -1,4 +1,4 @@
-package com.blocker147.vftask.student;
+package com.blocker147.vftask.animal;
 
 import javax.validation.constraints.*;
 import java.util.Objects;

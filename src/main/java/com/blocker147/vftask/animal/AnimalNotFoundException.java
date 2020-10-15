@@ -1,4 +1,4 @@
-package com.blocker147.vftask.student;
+package com.blocker147.vftask.animal;
 
 public class AnimalNotFoundException extends RuntimeException {
     public AnimalNotFoundException(String message) {
