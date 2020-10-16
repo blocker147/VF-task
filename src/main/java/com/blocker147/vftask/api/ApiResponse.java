@@ -1,6 +1,7 @@
 package com.blocker147.vftask.api;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ApiResponse {
     private Pagination pagination;
@@ -36,5 +37,21 @@ public class ApiResponse {
                 "pagination=" + pagination +
                 ", data=" + Arrays.toString(data) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ApiResponse that = (ApiResponse) o;
+        return Objects.equals(pagination, that.pagination) &&
+                Arrays.equals(data, that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(pagination);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
     }
 }

@@ -1,5 +1,7 @@
 package com.blocker147.vftask.api;
 
+import java.util.Objects;
+
 public class Country {
     private String capital;
     private int population;
@@ -34,5 +36,19 @@ public class Country {
                 "capital='" + capital + '\'' +
                 ", population=" + population +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Country country = (Country) o;
+        return population == country.population &&
+                Objects.equals(capital, country.capital);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(capital, population);
     }
 }

@@ -23,7 +23,7 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(AnimalNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> studentNotFoundException(AnimalNotFoundException exception) {
+    public Map<String, Object> animalNotFoundException(AnimalNotFoundException exception) {
         log.error(exception.getClass().getSimpleName() + ". " + exception.getMessage());
         return exceptionHandler.setResponseWithErrors(HttpStatus.NOT_FOUND, Collections.singletonList(exception.getMessage()));
     }

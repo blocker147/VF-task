@@ -1,5 +1,7 @@
 package com.blocker147.vftask.api;
 
+import java.util.Objects;
+
 public class Pagination {
     private int limit;
 
@@ -23,5 +25,18 @@ public class Pagination {
         return "Pagination{" +
                 "limit=" + limit +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pagination that = (Pagination) o;
+        return limit == that.limit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(limit);
     }
 }
