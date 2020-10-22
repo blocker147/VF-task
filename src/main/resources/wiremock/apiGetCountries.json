@@ -1,0 +1,36 @@
+{
+  "pagination": {
+    "offset": 0,
+    "limit": 2,
+    "count": 2,
+    "total": 252
+  },
+  "data": [
+    {
+      "capital": "Andorra la Vella",
+      "currency_code": "EUR",
+      "fips_code": "AN",
+      "country_iso2": "AD",
+      "country_iso3": "AND",
+      "continent": "EU",
+      "country_name": "Andorra",
+      "currency_name": "Euro",
+      "country_iso_numeric": "20",
+      "phone_prefix": "376",
+      "population": "84000"
+    },
+    {
+      "capital": "Abu Dhabi",
+      "currency_code": "AED",
+      "fips_code": "AE",
+      "country_iso2": "AE",
+      "country_iso3": "ARE",
+      "continent": "AS",
+      "country_name": "United Arab Emirates",
+      "currency_name": "Dirham",
+      "country_iso_numeric": "784",
+      "phone_prefix": "971",
+      "population": "4975593"
+    }
+  ]
+}
