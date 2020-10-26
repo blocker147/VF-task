@@ -11,17 +11,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
 public class ApiService {
     private static final Logger log = LoggerFactory.getLogger(ApiService.class);
-    private static final String API_KEY = "e84e7e35d156d408c37d836510c23946";
     private static final String path = "http://api.aviationstack.com/v1/countries";
 
     public String setParametersToURL(Map<String, String> parameters) {
         log.info("setParametersToURL()");
-        parameters.put("access_key", API_KEY);
         StringBuilder pathWithParameters = new StringBuilder(path);
         pathWithParameters.append("?");
         for (String param : parameters.keySet()) {
@@ -36,8 +35,9 @@ public class ApiService {
     }
 
     @Cacheable(value = "apiResponse", key = "#parameters.get('limit')")
-    public ApiResponse callApi(Map<String, String> parameters) {
+    public Map<String, Object> callApi(Map<String, String> parameters) {
         log.info("callApi()");
+        Map<String, Object> response = new LinkedHashMap<>();
         ApiResponse apiResponse = null;
         try {
             /*set parameters*/
@@ -50,6 +50,8 @@ public class ApiService {
 
             /*get response content*/
             int status = connection.getResponseCode();
+            response.put("status", status);
+
             if (status == 200) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
@@ -68,6 +70,7 @@ public class ApiService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return apiResponse;
+        response.put("apiResponse", apiResponse);
+        return response;
     }
 }

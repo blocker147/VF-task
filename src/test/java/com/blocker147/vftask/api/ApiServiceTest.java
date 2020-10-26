@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -44,22 +42,16 @@ class ApiServiceTest {
     @Mock
     private ApiService apiService;
 
-//    @Autowired
-//    private CacheManager cacheManager;
-
     private Map<String, String> parameters() {
         Map<String, String> parameters = new LinkedHashMap<>();
+        parameters.put("access_key", API_KEY);
         parameters.put("limit", String.valueOf(limit));
         return parameters;
     }
 
-//    private ApiResponse apiResponse() {
-//        Country[] data = new Country[limit];
-//        for (int i = 0; i < limit; i++) {
-//            data[i] = new Country("Capital" + i, i);
-//        }
-//        return new ApiResponse(new Pagination(limit), data);
-//    }
+    private Map<String, String> noParameters() {
+        return new LinkedHashMap<>();
+    }
 
     @Test
     void setParametersToURL() {
@@ -76,22 +68,15 @@ class ApiServiceTest {
         }
     }
 
-//    @Test
-//    void getDataFromJson() {
-//        ApiResponse expected = apiResponse();
-//        String json = new Gson().toJson(expected, ApiResponse.class);
-//        ApiResponse actual = apiService.getDataFromJson(json);
-//
-//        assertNotNull(actual);
-//        assertEquals(expected, actual);
-//    }
-
     @Test
     void callApi() {
         InputStream jsonInputStream = this.getClass().getClassLoader().getResourceAsStream("wiremock/apiGetCountries.json");
         String expectedBody = convertInputStreamToString(jsonInputStream);
-        ApiResponse expectedResponse = new Gson().fromJson(expectedBody, ApiResponse.class);
+        ApiResponse expectedApiResponse = new Gson().fromJson(expectedBody, ApiResponse.class);
         int expectedStatusCode = 200;
+        Map<String, Object> expectedResponse = new LinkedHashMap<>();
+        expectedResponse.put("status", expectedStatusCode);
+        expectedResponse.put("apiResponse", expectedApiResponse);
 
         stubFor(get(urlEqualTo(pathWithParameters))
                 .willReturn(aResponse()
@@ -101,15 +86,39 @@ class ApiServiceTest {
 
         Map<String, String> parameters = parameters();
         when(apiService.callApi(parameters)).thenReturn(expectedResponse);
-        ApiResponse actualResponse = apiService.callApi(parameters);
+        Map<String, Object> actualResponse = apiService.callApi(parameters);
 
-        assertEquals(expectedResponse, actualResponse);
+        assertEquals(expectedStatusCode, actualResponse.get("status"));
+        assertEquals(expectedApiResponse, actualResponse.get("apiResponse"));
+    }
+
+    @Test
+    void callApiShouldReturnInternalServerError() {
+        int expectedStatusCode = 500;
+        Map<String, Object> expectedResponse = new LinkedHashMap<>();
+        expectedResponse.put("status", expectedStatusCode);
+        expectedResponse.put("apiResponse", null);
+
+        stubFor(get(urlEqualTo(pathWithParameters))
+                .willReturn(aResponse()
+                        .proxiedFrom(host)
+                        .withStatus(expectedStatusCode)
+                        .withBody("")));
+
+        when(apiService.callApi(parameters())).thenReturn(expectedResponse);
+        Map<String, Object> actualResponse = apiService.callApi(parameters());
+
+        assertEquals(expectedStatusCode, actualResponse.get("status"));
+        assertNull(actualResponse.get("apiResponse"));
     }
 
     @Test
     void callApiShouldReturnAccessTokenNotPassed() {
         String expectedBody = "You have not supplied an API Access Key. [Required format: access_key=YOUR_ACCESS_KEY]";
         int expectedStatusCode = 401;
+        Map<String, Object> expectedResponse = new LinkedHashMap<>();
+        expectedResponse.put("status", expectedStatusCode);
+        expectedResponse.put("apiResponse", null);
 
         stubFor(get(urlEqualTo(path))//path without access_key parameter
                 .willReturn(aResponse()
@@ -117,10 +126,11 @@ class ApiServiceTest {
                         .withStatus(expectedStatusCode)
                         .withBody(expectedBody)));
 
-        /*Checked exception is invalid for this method!*/
-        when(apiService.callApi(null)).thenThrow(new Exception());
-        ApiResponse apiResponse = apiService.callApi(null);
+        when(apiService.callApi(noParameters())).thenReturn(expectedResponse);
+        Map<String, Object> actualResponse = apiService.callApi(noParameters());
 
+        assertEquals(expectedStatusCode, actualResponse.get("status"));
+        assertNull(actualResponse.get("apiResponse"));
     }
 
     private String convertInputStreamToString(InputStream inputStream) {
